@@ -138,7 +138,6 @@ int main()
 	            if(aktifKullanici->rol >= 2)
 	            {
 	                Kullanici yeniK;
-	                printf("ID: ");             scanf("%d", &yeniK.id);
 	                printf("Ad: ");             scanf("%s", yeniK.ad);
 	                printf("Soyad: ");          scanf("%s", yeniK.soyad);
 	                printf("Kullanici adi: ");  scanf("%s", yeniK.kullanici_adi);

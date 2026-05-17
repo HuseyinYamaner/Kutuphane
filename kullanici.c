@@ -5,15 +5,35 @@
 
 void kullaniciEkle(Kullanici *k)
 {
-	FILE *fp = fopen("kullanicilar.txt","a");
-	if(fp==NULL)
-	{
-		return;
-	}
-	
-	fprintf(fp,"%d %s %s %s %s %d\n",k->id,k->ad,k->soyad,k->kullanici_adi,k->sifre,k->rol);
-	
-	fclose(fp);
+    FILE *fp = fopen("kullanicilar.txt", "r");
+    
+    int sonId = 0;
+    Kullanici temp;
+    if(fp != NULL)
+    {
+        while(fscanf(fp, "%d %s %s %s %s %d",
+               &temp.id, temp.ad, temp.soyad,
+               temp.kullanici_adi, temp.sifre, &temp.rol) == 6)
+        {
+            if(temp.id > sonId) sonId = temp.id;
+        }
+        fclose(fp);
+    }
+    k->id = sonId + 1;
+
+    fp = fopen("kullanicilar.txt", "a");
+    if(fp == NULL) return;
+    
+    fseek(fp, -1, SEEK_END);
+	int sonKarakter = fgetc(fp);
+	if(sonKarakter != '\n' && sonKarakter != EOF)
+    fprintf(fp, "\n");
+
+    fprintf(fp, "%d %s %s %s %s %d\n",
+            k->id, k->ad, k->soyad,
+            k->kullanici_adi, k->sifre, k->rol);
+
+    fclose(fp);
 }
 
 void kullaniciSil(int id)
@@ -26,7 +46,7 @@ void kullaniciSil(int id)
 	}
 	
 	Kullanici k;
-	while(fscanf(fp,"%d %s %s %s %s %d\n",&k.id,k.ad,k.soyad,k.kullanici_adi,k.sifre,&k.rol))
+	while(fscanf(fp,"%d %s %s %s %s %d\n",&k.id,k.ad,k.soyad,k.kullanici_adi,k.sifre,&k.rol)==6	)
 	{
 		if(k.id != id)
 		{
