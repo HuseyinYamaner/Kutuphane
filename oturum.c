@@ -6,17 +6,16 @@
 Kullanici *girisYap(char *kullanici_adi, char *sifre)
 {
 	FILE *fp = fopen("kullanicilar.txt","r");
-	if(*fp==NULL)
+	if(fp==NULL)
 	{
 		return NULL;
 	}
-
 
 	Kullanici k;
 	
 	while(fscanf(fp,"%d %s %s %s %s %d",&k.id,k.ad,k.soyad,k.kullanici_adi,k.sifre,&k.rol)==6)
 	{
-		if(strcmp(k.kullanici_adi,kullanici_adi)&&strcmp(k.sifre,sifre))
+		if(strcmp(k.kullanici_adi,kullanici_adi)==0 && strcmp(k.sifre,sifre)==0)
 		{
 			Kullanici *bulunan = malloc(sizeof(Kullanici));
 			if(bulunan == NULL)

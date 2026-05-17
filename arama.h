@@ -13,6 +13,8 @@ typedef struct {
     int yayinYili;
     int stok;
     char konum[MAX_STR];
+    int durum;
+    int sayfaSayisi;
 } Kitap;
 
 /*
@@ -49,4 +51,9 @@ void kitaplariListele(Kitap kitaplar[], int adet);
 */
 void kitapBilgisiYazdir(Kitap kitap);
 
+// Büyük/küçük harf duyarsýz alt string arama
+int stringIceriyor(const char *kaynak, const char *aranan);
+
+// Büyük/küçük harf duyarsýz tam eþleþme karþýlaþtýrma
+int stringKarsilastir(const char *s1, const char *s2);
 #endif

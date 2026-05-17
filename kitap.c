@@ -3,160 +3,140 @@
 #include <string.h>
 #include "kitap.h"
 
-//yeni bir kitabı dosyaya ekleme
-
-void kitapEkle(Kitap *k){
-
-    FILE *fp =fopen("kitaplar.txt", "a");
-
-    if (fp == NULL){
-
-        printf(" Dosya acilamadi! \n");
-        return;
-
-    }
-
-    // Verileri dosyaya boşluklara ayırıp yazma
-
-    fprintf(fp, "%d %s %s %s %d %d \n", k->id, k->isim, k->yazarAd, k->yayinEvi, k->sayfaSayi, k->durum);
-
-    fclose(fp);
-
-    printf("Kitap başarıyla eklendi.\n");
-}
-
-//Tüm kitapları ekrana listeleme
-
-void kitapListele(){
-
+void kitaplariDosyadanYukle(Kitap kitaplar[], int *kitapSayisi)
+{
     FILE *fp = fopen("kitaplar.txt", "r");
-
-    if(fp == NULL){
-
-        printf("Henuz hic kitap eklenmemis veya dosya bulunamadi. \n");
+    if(fp == NULL)
+    {
+        printf("kitaplar.txt bulunamadi, bos liste ile baslan�yor.\n");
+        *kitapSayisi = 0;
         return;
-
     }
 
-    Kitap k;
-
-    printf("\n%-5s %-20s %-20s %-15s %-10s %-10s \n", "ID", "Kitap Adi", "Yazar", "Yayinevi", "Sayfa", "Durum");
-    printf("*************************************************************************************\n");
-
-    //satırları tek tek okuma
-
-    while (fscanf(fp, "%d %s %s %s %d %d", &k.id, &k.isim, &k.yazarAd, &k.yayinEvi, &k.sayfaSayi, &k.durum) == 6){
-
-        char *durum_str = (k.durum == 1 ) ? "Mevcut" : "Odunc" ;
-        printf("%-5d %-20s %-20s %-15s %-10d %-10s\n", k.id, k.isim, k.yazarAd, k.yayinEvi, k.sayfaSayi, durum_str);
-
+    *kitapSayisi = 0;
+    while(fscanf(fp, "%d %s %s %s %s %d %d %d %s %d",
+        &kitaplar[*kitapSayisi].id,
+        kitaplar[*kitapSayisi].isbn,
+        kitaplar[*kitapSayisi].ad,
+        kitaplar[*kitapSayisi].yazar,
+        kitaplar[*kitapSayisi].yayinevi,
+        &kitaplar[*kitapSayisi].yayinYili,
+        &kitaplar[*kitapSayisi].sayfaSayisi,
+        &kitaplar[*kitapSayisi].stok,
+        kitaplar[*kitapSayisi].konum,
+        &kitaplar[*kitapSayisi].durum) == 10)
+    {
+        (*kitapSayisi)++;
     }
 
     fclose(fp);
+    printf("%d kitap yuklendi.\n", *kitapSayisi);
 }
-//Belirtilen ID'ye sahip kitabı dosuadan silme
 
-void kitapSil(int id){
-
-    FILE *fp = fopen("kitaplar.txt", "r");
-    FILE *temp = fopen("temp.txt", "w");
-
-    if(fp == NULL || temp == NULL){
-
-        printf("Dosya acilamadi.\n");
-        return; 
-
+void kitaplariDosyayaKaydet(Kitap kitaplar[], int kitapSayisi)
+{
+    FILE *fp = fopen("kitaplar.txt", "w");
+    if(fp == NULL)
+    {
+        printf("Dosya kaydedilemedi!\n");
+        return;
     }
 
-    Kitap k;
-    int bulundu = 0;
-    
-    while(fcanf(fp, "%d %s %s %s %d %d", &k.id, &k.isim, &k.yazarAd, &k.yayinEvi, &k.sayfaSayi, &k.durum) == 6){
+    int i;
+    for(i = 0; i < kitapSayisi; i++)
+    {
+        fprintf(fp, "%d %s %s %s %s %d %d %d %s %d\n",
+            kitaplar[i].id,
+            kitaplar[i].isbn,
+            kitaplar[i].ad,
+            kitaplar[i].yazar,
+            kitaplar[i].yayinevi,
+            kitaplar[i].yayinYili,
+            kitaplar[i].sayfaSayisi,
+            kitaplar[i].stok,
+            kitaplar[i].konum,
+            kitaplar[i].durum);
+    }
 
-        if(k.id != id){
+    fclose(fp);
+}
 
-            fprintf(temp, "%d %s %s %s %d %d\n", k.id, k.isim, k.yazarAd, k.yayinEvi, k.sayfaSayi, k.durum );
-        }else{
-            bulundu=1;
+void kitapEkle(Kitap kitaplar[], int *kitapSayisi)
+{
+    Kitap yeni;
+
+    printf("ID: ");           scanf("%d", &yeni.id);
+    printf("ISBN: ");         scanf("%s", yeni.isbn);
+    printf("Ad: ");           scanf("%s", yeni.ad);
+    printf("Yazar: ");        scanf("%s", yeni.yazar);
+    printf("Yayinevi: ");     scanf("%s", yeni.yayinevi);
+    printf("Yayin Yili: ");   scanf("%d", &yeni.yayinYili);
+    printf("Sayfa Sayisi: "); scanf("%d", &yeni.sayfaSayisi);
+    printf("Stok: ");         scanf("%d", &yeni.stok);
+    printf("Konum: ");        scanf("%s", yeni.konum);
+    yeni.durum = 1;
+
+    kitaplar[*kitapSayisi] = yeni;
+    (*kitapSayisi)++;
+
+    kitaplariDosyayaKaydet(kitaplar, *kitapSayisi);
+    printf("Kitap eklendi.\n");
+}
+
+void kitapSil(Kitap kitaplar[], int *kitapSayisi)
+{
+    int silId, i, bulundu = 0;
+    printf("Silinecek kitap ID: ");
+    scanf("%d", &silId);
+
+    for(i = 0; i < *kitapSayisi; i++)
+    {
+        if(kitaplar[i].id == silId)
+        {
+            bulundu = 1;
+            for(; i < *kitapSayisi - 1; i++)
+                kitaplar[i] = kitaplar[i+1];
+            (*kitapSayisi)--;
+            kitaplariDosyayaKaydet(kitaplar, *kitapSayisi);
+            printf("Kitap silindi.\n");
+            break;
         }
     }
 
-    fclose(fp);
-    fclose(temp);
-
-    remove("kitaplar.txt");
-    rename("temp.txt", "kitaplar.txt");
-
-    if(bulundu) printf("ID: %d olan kitap silindi.\n", id);
-    else printf("Kitap bulunamadi.\n");
-
+    if(!bulundu) printf("Kitap bulunamadi.\n");
 }
 
-//KitapSile benzer şekilde ID eşleştiğinde işlem yapar
-void kitapGuncelle(int id){
+void kitapGuncelle(Kitap kitaplar[], int kitapSayisi)
+{
+    int gunId, i, bulundu = 0;
+    printf("Guncellenecek kitap ID: ");
+    scanf("%d", &gunId);
 
-    FILE *fp = fopen("kitaplar.txt", "r");
-    FILE *temp = fopen("temp.txt", "w");
+    for(i = 0; i < kitapSayisi; i++)
+    {
+        if(kitaplar[i].id == gunId)
+        {
+            bulundu = 1;
 
-    if(fp == NULL || temp == NULL){
-
-        printf(" Dosyalar acilamadi.\n");
-        return;
-
-    }
-
-    Kitap k;
-    int bulundu =0;
-
-    //Dosyayı satır satır okuma
-
-    while (fscanf(fp, "%d %s %s %s %d %d", &k.id, &k.yazarAd, &k.yayinEvi, &k.sayfaSayi, &k.durum) == 6){
-
-        if(k.id ==id){
-
-            bulundu=1;
-            
-            printf("\n---- MEVCUT BİLGİLER ----\n");
-            printf("Kitap Adi: %s ||| Yazar Adi: %s ||| Yayinevi: %s ||| Sayfa Sayisi: %d ||| Durum: %s\n", k.isim, k.yazarAd, k.yayinEvi, k.sayfaSayi, (k.durum == 1 ? "Mevcut" : "Odunc Verilmis"));
+            printf("\n---- MEVCUT BILGILER ----\n");
+            printf("Ad: %s | Yazar: %s | Yayinevi: %s | Sayfa: %d | Durum: %s\n",
+                kitaplar[i].ad, kitaplar[i].yazar, kitaplar[i].yayinevi,
+                kitaplar[i].sayfaSayisi, kitaplar[i].durum == 1 ? "Mevcut" : "Odunc");
             printf("-------------------------------\n");
 
-            printf("---- YENİ BİLGİLERİ GİRİN ----\n");
-            printf("Yeni Kitap Adi: "); scanf("%s", k.isim);
-            printf("Yeni Yazar Adi: "); scanf("%s", k.yazarAd);
-            printf("Yeni Yayinevi: "); scanf("%s", k.yayinEvi);
-            printf("Yeni Sayfa Sayisi: "); scanf("%d", &k.sayfaSayi);
-            printf("Yeni Durum (1: Mevcut, 0: Odunc): "); scanf("%d", &k.durum);
+            printf("Yeni Ad: ");           scanf("%s", kitaplar[i].ad);
+            printf("Yeni Yazar: ");        scanf("%s", kitaplar[i].yazar);
+            printf("Yeni Yayinevi: ");     scanf("%s", kitaplar[i].yayinevi);
+            printf("Yeni Yayin Yili: ");   scanf("%d", &kitaplar[i].yayinYili);
+            printf("Yeni Sayfa Sayisi: "); scanf("%d", &kitaplar[i].sayfaSayisi);
+            printf("Yeni Stok: ");         scanf("%d", &kitaplar[i].stok);
+            printf("Yeni Konum: ");        scanf("%s", kitaplar[i].konum);
 
-            //Güncellenmiş veriyi temp dosyasına yazma
-
-            fprintf(temp, "%d %s %s %s %d %d\n", k.id, k.isim, k.yazarAd, k.yayinEvi, k.sayfaSayi, k.durum);
-            
-        }else{
-        
-        //Değişmeyen verileri olduğu gibi temp dosyasına yazma
-
-        fprintf(temp, "%d %s %s %s %d %d\n",k.id, k.isim, k.yazarAd, k.yayinEvi, k.sayfaSayi, k.durum);
-
+            kitaplariDosyayaKaydet(kitaplar, kitapSayisi);
+            printf("Kitap guncellendi.\n");
+            break;
         }
-
     }
 
-    fclose(fp);
-    fclose(temp);
-
-    //eski doyayı silip yeni dosyaya adını verme
-    remove("kitaplar.txt");
-    rename("temp.txt","kitaplar.txt");
-
-    if(bulundu){
-
-        printf("\nID: %d olan kitap basariyla guncellendi.\n",id);
-
-    }else{
-
-        printf("\nID: %d olan kitap bulunamadi.\n",id);
-    }
+    if(!bulundu) printf("Kitap bulunamadi.\n");
 }
-
-
-

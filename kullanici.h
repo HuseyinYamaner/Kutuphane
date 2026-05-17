@@ -13,6 +13,6 @@ typedef struct{
 void kullaniciEkle(Kullanici *k);
 void kullaniciSil(int id);
 void kullaniciGuncelle(int id);
-void kullanicilariListele();
+void kullanicilarListele();
 
 #endif

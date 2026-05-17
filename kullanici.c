@@ -42,11 +42,38 @@ void kullaniciSil(int id)
 
 void kullaniciGuncelle(int id)
 {
-	// yap�lacak
+	FILE *fp = fopen("kullanicilar.txt","r");
+	FILE *temp = fopen("temp.txt","w");
+	
+	if(fp==NULL || temp == NULL)
+	{
+		return;
+	}
+	
+	Kullanici k;
+	
+	while(fscanf(fp,"%d %s %s %s %s %d",&k.id,k.ad,k.soyad,k.kullanici_adi,k.sifre,&k.rol)==6)
+	{
+		if(k.id==id)
+		{
+			printf("Yeni ad: ");
+			scanf("%s",k.ad);
+			printf("Yeni Soyad: ");
+			scanf("%s",k.soyad);
+			printf("Yeni kullanici adi: ");
+			scanf("%s",k.kullanici_adi);
+			printf("Yeni sifre: ");
+			scanf("%s",k.sifre);
+			printf("Yeni rol(0=uye,1=gorevli,2=admin): ");
+			scanf("%d",&k.rol);
+		}
+		fprintf(temp,"%d %s %s %s %s %d\n",k.id,k.ad,k.soyad,k.kullanici_adi,k.sifre,k.rol);
+	}
+	fclose(fp);
+	fclose(temp);
+	remove("kullanicilar.txt");
+	rename("temp.txt","kullanicilar.txt");
 }
-
-
-
 
 void kullanicilarListele()
 {

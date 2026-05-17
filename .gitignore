@@ -1,0 +1,14 @@
+# Derleme çıktıları
+*.o
+*.exe
+*.out
+*.gch
+
+# Dev-C++ dosyaları
+*.layout
+Makefile.win
+
+# Geçici dosyalar
+temp.txt
+kitaplar.txt
+kullanicilar.txt
